@@ -58,15 +58,14 @@ resource "google_compute_subnetwork" "subnetwork" {
   # ]
   dynamic "secondary_ip_range" {
     for_each = toset([
-      for subnet_name, range in var.secondary_ranges: range
-      if range == each.value.subnet_name
-    ])
+      for subnet_name, ranges in var.secondary_ranges: ranges
+      if subnet_name == each.value.subnet_name
+    ][0])
     content {
       range_name    = secondary_ip_range.value.range_name
       ip_cidr_range = secondary_ip_range.value.ip_cidr_range
     }
   }
-
   purpose = lookup(each.value, "purpose", null)
   role    = lookup(each.value, "role", null)
 }
